@@ -30,7 +30,7 @@ jobs:
     - name: Build client
       run: |
         cd client
-        echo "VITE_SERVER_URL=http://54.165.80.84:5175" > .env
+        echo "VITE_SERVER_URL=http://kelvinnewton.com/api/quartoclone" > .env
         npm run build
     
     - name: Install server dependencies
@@ -49,7 +49,8 @@ jobs:
           # Navigate to app directory
           cd /home/ubuntu/quartoclone
           
-          # Pull latest changes
+          # Stash any local changes and pull latest changes
+          git stash
           git pull origin main
           
           # Install/update server dependencies
@@ -59,8 +60,13 @@ jobs:
           # Install/update client dependencies and build
           cd ../client
           npm ci
-          echo "VITE_SERVER_URL=http://54.165.80.84:5175" > .env
+          echo "VITE_SERVER_URL=http://kelvinnewton.com/api/quartoclone" > .env
           npm run build
+          
+          # Copy built files to nginx web directory
+          sudo mkdir -p /var/www/quartoclone
+          sudo cp -r dist/* /var/www/quartoclone/
+          sudo chown -R www-data:www-data /var/www/quartoclone
           
           # Restart services
           # Kill existing processes
@@ -74,8 +80,7 @@ jobs:
           cd /home/ubuntu/quartoclone/server
           nohup node index.js > server.log 2>&1 &
           
-          # Start client
-          cd /home/ubuntu/quartoclone/client
-          nohup sudo serve -s dist -l 80 > client.log 2>&1 &
+          # Restart nginx to serve updated files
+          sudo systemctl restart nginx
           
           echo "Deployment completed successfully!"
