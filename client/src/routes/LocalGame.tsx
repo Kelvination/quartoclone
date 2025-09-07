@@ -22,7 +22,7 @@ export default function LocalGame() {
           </div>
         )}
         <div className="space" />
-        <BoardView state={state} onPlace={(r,c)=> setState(s=> placePiece(s, r, c))} />
+        <BoardView state={state} onPlace={(r,c)=> setState(s=> placePiece(s, r, c))} isMyTurn={true} />
       </div>
 
       <div className="space" />

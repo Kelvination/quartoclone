@@ -171,7 +171,7 @@ export default function OnlineGame() {
           </div>
         )}
         <div className="space" />
-        <BoardView state={state} onPlace={(r,c)=> myTurn && broadcast(placePiece(state, r, c))} />
+        <BoardView state={state} onPlace={(r,c)=> myTurn && broadcast(placePiece(state, r, c))} isMyTurn={myTurn} />
         <div className="space" />
         <PieceTray
           pieces={pieces}

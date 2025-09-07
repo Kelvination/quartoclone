@@ -121,6 +121,10 @@ button {
   background: #e9f7ee;
   border-color: #3f7d59;
 }
+.cell.waiting {
+  background: #fef2e9;
+  border-color: #d97706;
+}
 .cell.last {
   box-shadow: 0 0 0 3px var(--focus) inset;
 }
