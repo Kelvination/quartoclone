@@ -1,0 +1,81 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          client/package-lock.json
+          server/package-lock.json
+    
+    - name: Install client dependencies
+      run: |
+        cd client
+        npm ci
+    
+    - name: Build client
+      run: |
+        cd client
+        echo "VITE_SERVER_URL=http://54.165.80.84:5175" > .env
+        npm run build
+    
+    - name: Install server dependencies
+      run: |
+        cd server
+        npm ci
+    
+    - name: Deploy to EC2
+      if: github.ref == 'refs/heads/main'
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        script: |
+          # Navigate to app directory
+          cd /home/ubuntu/quartoclone
+          
+          # Pull latest changes
+          git pull origin main
+          
+          # Install/update server dependencies
+          cd server
+          npm ci --production
+          
+          # Install/update client dependencies and build
+          cd ../client
+          npm ci
+          echo "VITE_SERVER_URL=http://54.165.80.84:5175" > .env
+          npm run build
+          
+          # Restart services
+          # Kill existing processes
+          sudo pkill -f "serve -s dist -l 80" || true
+          sudo pkill -f "node index.js" || true
+          
+          # Wait a moment for processes to fully stop
+          sleep 2
+          
+          # Start server
+          cd /home/ubuntu/quartoclone/server
+          nohup node index.js > server.log 2>&1 &
+          
+          # Start client
+          cd /home/ubuntu/quartoclone/client
+          nohup sudo serve -s dist -l 80 > client.log 2>&1 &
+          
+          echo "Deployment completed successfully!"
