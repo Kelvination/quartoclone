@@ -10,7 +10,9 @@ const router = createBrowserRouter([
   { path: '/', element: <Home /> },
   { path: '/local', element: <LocalGame /> },
   { path: '/online/:roomId?', element: <OnlineGame /> },
-])
+], {
+  basename: '/quartoclone'
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
