@@ -1,0 +1,269 @@
+:root {
+  --bg: #0f1115;
+  --panel: #151922;
+  --panel-2: #1b2130;
+  --text: #e6e9ef;
+  --muted: #a0a8b8;
+  --primary: #6ea8fe;
+  --success: #67d79b;
+  --danger: #ff6b6b;
+  --focus: #88b0ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+  color: var(--text);
+  background: var(--bg);
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+button {
+  font: inherit;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 16px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid #222a3b;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0 0 12px 0;
+  font-size: 28px;
+  text-align: center;
+}
+.subtitle {
+  color: var(--muted);
+  margin: 0 0 16px 0;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+.space {
+  height: 16px;
+}
+
+.btn {
+  background: #20283a;
+  color: var(--text);
+  border: 1px solid #2b3550;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.btn:hover {
+  border-color: var(--focus);
+}
+.btn.primary {
+  background: #243151;
+  border-color: #32446e;
+}
+.btn.success {
+  background: #1f3a2a;
+  border-color: #2f5f46;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 14px;
+  background: #0c1018;
+  border-radius: 14px;
+  border: 1px solid #1f2636;
+  width: min(92vw, 420px);
+}
+.cell {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #eef2f7;
+  color: #1a1a1a;
+  border: 2px solid #3a465f;
+}
+.cell.can {
+  background: #e9f7ee;
+  border-color: #3f7d59;
+}
+.cell.last {
+  box-shadow: 0 0 0 3px var(--focus) inset;
+}
+.cell.win {
+  box-shadow: 0 0 0 3px var(--success) inset;
+}
+
+.tray {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  padding: 12px;
+  background: #0c1018;
+  border-radius: 14px;
+  border: 1px solid #1f2636;
+  width: min(92vw, 720px);
+  transition: all 0.3s ease;
+}
+.tray.active {
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 0 2px rgba(110, 168, 254, 0.2);
+  background: linear-gradient(180deg, #0e1420, #0c1018);
+}
+.pieceButton {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 8 / 9;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 1px solid #2b3550;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+.pieceButton svg {
+  width: 70%;
+  height: auto;
+}
+.pieceButton.selected {
+  outline: 3px solid var(--primary);
+}
+.pieceButton:disabled {
+  opacity: 0.35;
+  filter: grayscale(0.3);
+}
+.pieceButton:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.pieceButton.selectable {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(110, 168, 254, 0.3);
+}
+
+.statusBar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+  justify-content: center;
+}
+.badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid #32446e;
+  background: #1a2234;
+  color: var(--text);
+}
+
+.turnBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+}
+.turnBanner.myTurn {
+  background: rgba(110, 168, 254, 0.1);
+  border: 1px solid rgba(110, 168, 254, 0.3);
+}
+.turnText {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.piecePreview {
+  width: 80px;
+  height: 92px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #2b3550;
+}
+.glow {
+  box-shadow: 0 0 0 3px var(--primary) inset;
+}
+.badge.active {
+  background: var(--primary);
+  color: #fff;
+}
+.playerIdentity {
+  color: var(--muted);
+  font-size: 14px;
+}
+.gameOverActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.rematchMessage {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .board {
+    width: min(92vw, 360px);
+  }
+  .tray {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    width: 92vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+  .board {
+    width: 92vw;
+  }
+  .tray {
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    width: 92vw;
+  }
+  .pieceButton svg {
+    width: 64%;
+  }
+}
