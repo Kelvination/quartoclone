@@ -5,10 +5,28 @@ import cors from 'cors';
 import { nanoid } from 'nanoid';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://kelvinnewton.com',
+    'https://quartoclone.kelvinnewton.com',
+    'http://localhost:5173', // for development
+    'http://localhost:3000'  // for development
+  ],
+  credentials: true
+}));
 
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: '*' } });
+const io = new Server(server, { 
+  cors: { 
+    origin: [
+      'https://kelvinnewton.com',
+      'https://quartoclone.kelvinnewton.com',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ],
+    credentials: true
+  } 
+});
 
 // Room management
 const rooms = new Map(); // roomId -> { players: Set<socketId>, state?: any, rematchRequests?: Set<socketId> }
