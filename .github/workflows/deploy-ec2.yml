@@ -1,0 +1,70 @@
+name: Deploy QuartoClone to EC2
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install client dependencies
+        run: cd client && npm ci
+
+      - name: Build client
+        run: cd client && npm run build
+
+      - name: Deploy to EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key
+          chmod 600 private_key
+          
+          # Create a tarball of the client dist folder
+          cd client
+          tar -czf ../quartoclone-dist.tar.gz dist/
+          cd ..
+          
+          # Copy the tarball to EC2
+          scp -o StrictHostKeyChecking=no -i private_key quartoclone-dist.tar.gz ${USER}@${HOST}:/tmp/
+          
+          # Extract and deploy on EC2
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER}@${HOST} << 'EOF'
+            # Backup current QuartoClone
+            if [ -d /var/www/projects/quartoclone ]; then
+              sudo cp -r /var/www/projects/quartoclone /var/www/projects/quartoclone.backup.$(date +%Y%m%d_%H%M%S)
+            fi
+            
+            # Create projects directory if it doesn't exist
+            sudo mkdir -p /var/www/projects/quartoclone
+            
+            # Extract new files
+            cd /tmp
+            tar -xzf quartoclone-dist.tar.gz
+            
+            # Deploy to web directory
+            sudo rm -rf /var/www/projects/quartoclone/*
+            sudo cp -r dist/* /var/www/projects/quartoclone/
+            sudo chown -R www-data:www-data /var/www/projects/quartoclone/
+            
+            # Clean up
+            rm -rf dist quartoclone-dist.tar.gz
+            
+            echo "QuartoClone deployment completed successfully!"
+          EOF
+          
+          # Clean up local files
+          rm -f private_key quartoclone-dist.tar.gz
